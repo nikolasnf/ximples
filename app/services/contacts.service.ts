@@ -69,11 +69,12 @@ export interface PaginatedResponse<T> {
 }
 
 export const contactsService = {
-  async list(params: { search?: string; list_id?: number; per_page?: number } = {}): Promise<PaginatedResponse<Contact>> {
+  async list(params: { search?: string; list_id?: number; per_page?: number; page?: number } = {}): Promise<PaginatedResponse<Contact>> {
     const qs = new URLSearchParams();
     if (params.search) qs.set('search', params.search);
     if (params.list_id) qs.set('list_id', String(params.list_id));
     if (params.per_page) qs.set('per_page', String(params.per_page));
+    if (params.page) qs.set('page', String(params.page));
     const query = qs.toString() ? `?${qs.toString()}` : '';
     const res = await api.get<{ success: boolean; data: Contact[]; meta: PaginatedResponse<Contact>['meta'] }>(
       `/api/v1/contacts${query}`,

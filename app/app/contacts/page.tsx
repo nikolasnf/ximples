@@ -10,6 +10,7 @@ import {
   type ContactList,
   type ImportResult,
   type ImportPreview,
+  type PaginatedResponse,
 } from '@/services/contacts.service';
 import { useCreateWithFeedback } from '@/hooks/use-create-with-feedback';
 import { useResourceList } from '@/hooks/use-resource-list';
@@ -23,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, Upload, Users, Loader2, Search, Trash2,
   CheckCircle, AlertCircle, Sparkles, Eye, ArrowRight,
-  RotateCcw, Save,
+  RotateCcw, Save, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 
 const FIELD_LABELS: Record<string, string> = {
@@ -52,6 +53,9 @@ function ContactsContent() {
   const [mappingOverrides, setMappingOverrides] = useState<Record<string, string>>({});
   const [templateName, setTemplateName] = useState('');
 
+  const [page, setPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState<PaginatedResponse<Contact>['meta'] | null>(null);
+
   const {
     items: contacts,
     setItems: setContacts,
@@ -60,11 +64,17 @@ function ContactsContent() {
   } = useResourceList<Contact>({
     resource: 'contacts',
     fetcher: async () => {
-      const res = await contactsService.list({ search: search || undefined, per_page: 100 });
+      const res = await contactsService.list({ search: search || undefined, per_page: 50, page });
+      setPaginationMeta(res.meta);
       return res.data;
     },
-    deps: [search],
+    deps: [search, page],
   });
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const { items: lists } = useResourceList<ContactList>({
     resource: 'lists',
@@ -445,7 +455,7 @@ function ContactsContent() {
             <Input
               placeholder="Buscar por nome, telefone ou email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
             <Button variant="outline" size="icon" disabled>
               <Search className="w-4 h-4" />
@@ -459,41 +469,74 @@ function ContactsContent() {
           ) : contacts.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-12">Nenhum contato ainda.</p>
           ) : (
-            <div className="divide-y">
-              {contacts.map((c) => {
-                const isNew = highlightedContactIds.has(c.id);
-                return (
-                  <div
-                    key={c.id}
-                    className={`flex items-center justify-between py-3 transition-colors ${
-                      isNew ? 'bg-blue-50 -mx-2 px-2 rounded animate-in fade-in' : ''
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{c.name || '(sem nome)'}</p>
-                        {isNew && (
-                          <Badge className="bg-blue-600 text-white text-[10px]">
-                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                            Novo
-                          </Badge>
-                        )}
+            <>
+              <div className="divide-y">
+                {contacts.map((c) => {
+                  const isNew = highlightedContactIds.has(c.id);
+                  return (
+                    <div
+                      key={c.id}
+                      className={`flex items-center justify-between py-3 transition-colors ${
+                        isNew ? 'bg-blue-50 -mx-2 px-2 rounded animate-in fade-in' : ''
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{c.name || '(sem nome)'}</p>
+                          {isNew && (
+                            <Badge className="bg-blue-600 text-white text-[10px]">
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                              Novo
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {c.phone}
+                          {c.email && <span className="ml-2">{c.email}</span>}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {c.phone}
-                        {c.email && <span className="ml-2">{c.email}</span>}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        {c.source_file && <Badge variant="outline">{c.source_file}</Badge>}
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)}>
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {c.source_file && <Badge variant="outline">{c.source_file}</Badge>}
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)}>
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
+                  );
+                })}
+              </div>
+
+              {paginationMeta && paginationMeta.last_page > 1 && (
+                <div className="flex items-center justify-between pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    {paginationMeta.total} contato{paginationMeta.total !== 1 ? 's' : ''}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page <= 1}
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      Anterior
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      {page} de {paginationMeta.last_page}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.min(paginationMeta.last_page, p + 1))}
+                      disabled={page >= paginationMeta.last_page}
+                    >
+                      Próxima
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              )}
+            </>
           )}
         </Card>
       </div>

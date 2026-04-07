@@ -3071,3 +3071,5 @@
 179.215.120.80 - - [07/Apr/2026:12:47:32 +0000] "OPTIONS /api/v1/lists HTTP/1.1" 204 0 "https://app.ximples.com.br/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
 179.215.120.80 - - [07/Apr/2026:12:47:33 +0000] "GET /api/v1/lists HTTP/1.1" 200 526 "https://app.ximples.com.br/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
 179.215.120.80 - - [07/Apr/2026:12:47:33 +0000] "GET /api/v1/contacts?per_page=100 HTTP/1.1" 200 52868 "https://app.ximples.com.br/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+216.73.216.155 - - [07/Apr/2026:12:57:19 +0000] "GET /robots.txt HTTP/1.1" 200 24 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
+216.73.216.155 - - [07/Apr/2026:12:57:19 +0000] "GET /sitemap.xml HTTP/1.1" 404 2329 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
