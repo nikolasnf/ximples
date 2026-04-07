@@ -1,0 +1,16 @@
+[Unit]
+Description=Ximples Laravel Queue Worker
+After=network.target postgresql.service redis.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=5
+WorkingDirectory=/srv/projects/ximples/backend
+ExecStart=/usr/bin/php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+StandardOutput=append:/srv/projects/ximples/logs/worker.log
+StandardError=append:/srv/projects/ximples/logs/worker-error.log
+
+[Install]
+WantedBy=multi-user.target

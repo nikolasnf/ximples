@@ -1,0 +1,1 @@
+2026/04/04 02:52:49 [error] 1350499#1350499: *17804 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 34.227.110.80, server: app.ximples.com.br, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:3000/", host: "app.ximples.com.br"

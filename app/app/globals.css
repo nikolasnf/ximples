@@ -1,0 +1,160 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Ximples Premium SaaS Color Palette */
+  --ximples-primary: #183A6B;
+  --ximples-primary-dark: #122C52;
+  --ximples-primary-light: #244D89;
+  --ximples-background: #F6F8FC;
+  --ximples-surface: #FFFFFF;
+  --ximples-surface-alt: #EEF3FB;
+  --ximples-border: #D8E2F0;
+  --ximples-text: #0F172A;
+  --ximples-text-soft: #5B6B84;
+  --ximples-success: #16A34A;
+  --ximples-warning: #D97706;
+  --ximples-danger: #DC2626;
+  
+  --background: #F6F8FC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #183A6B;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF3FB;
+  --secondary-foreground: #183A6B;
+  --muted: #EEF3FB;
+  --muted-foreground: #5B6B84;
+  --accent: #244D89;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #D8E2F0;
+  --input: #FFFFFF;
+  --ring: #183A6B;
+  --chart-1: #183A6B;
+  --chart-2: #244D89;
+  --chart-3: #5B6B84;
+  --chart-4: #D8E2F0;
+  --chart-5: #EEF3FB;
+  --radius: 1.25rem;
+}
+
+.dark {
+  --background: #0F172A;
+  --foreground: #F6F8FC;
+  --card: #122C52;
+  --card-foreground: #F6F8FC;
+  --popover: #122C52;
+  --popover-foreground: #F6F8FC;
+  --primary: #60A5FA;
+  --primary-foreground: #0F172A;
+  --secondary: #244D89;
+  --secondary-foreground: #F6F8FC;
+  --muted: #244D89;
+  --muted-foreground: #9FB3D5;
+  --accent: #3B82F6;
+  --accent-foreground: #0F172A;
+  --destructive: #F87171;
+  --destructive-foreground: #0F172A;
+  --border: #244D89;
+  --input: #122C52;
+  --ring: #60A5FA;
+  --chart-1: #60A5FA;
+  --chart-2: #3B82F6;
+  --chart-3: #9FB3D5;
+  --chart-4: #244D89;
+  --chart-5: #122C52;
+  --sidebar: #122C52;
+  --sidebar-foreground: #F6F8FC;
+  --sidebar-primary: #60A5FA;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #3B82F6;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #244D89;
+  --sidebar-ring: #60A5FA;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'ui-sans-serif', 'system-ui', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--primary);
+  --color-sidebar-foreground: #FFFFFF;
+  --color-sidebar-primary: #FFFFFF;
+  --color-sidebar-primary-foreground: var(--primary);
+  --color-sidebar-accent: #244D89;
+  --color-sidebar-accent-foreground: #FFFFFF;
+  --color-sidebar-border: #244D89;
+  --color-sidebar-ring: #60A5FA;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Ximples Premium SaaS Styles */
+.ximples-gradient {
+  background: linear-gradient(135deg, #122C52 0%, #183A6B 100%);
+}
+
+.ximples-shadow {
+  box-shadow: 0 10px 30px rgba(24, 58, 107, 0.08);
+}
+
+.ximples-button-primary {
+  @apply bg-primary hover:bg-[#122C52] text-white font-medium transition-all duration-200 rounded-[16px] px-6 py-3;
+}
+
+.ximples-button-secondary {
+  @apply bg-white hover:bg-secondary text-primary border border-border font-medium transition-all duration-200 rounded-[16px] px-6 py-3;
+}
+
+.ximples-input {
+  @apply w-full px-4 py-3 rounded-[16px] border border-border bg-white text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
+}
+
+.ximples-message-user {
+  @apply bg-primary text-white rounded-lg rounded-br-none;
+}
+
+.ximples-message-assistant {
+  @apply bg-secondary text-foreground border border-border rounded-lg rounded-bl-none;
+}

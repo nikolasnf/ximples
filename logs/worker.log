@@ -1,0 +1,52 @@
+  2026-04-04 03:40:49 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 03:40:50 App\Jobs\ProcessTaskJob .................. 231.55ms DONE
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ................... 49.21ms DONE
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ................... 31.79ms DONE
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 03:40:59 App\Jobs\ProcessTaskJob ................... 23.29ms DONE
+  2026-04-04 03:56:12 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 03:56:13 App\Jobs\ProcessTaskJob .................. 217.39ms DONE
+  2026-04-04 04:04:43 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:04:43 App\Jobs\ProcessTaskJob ................... 41.13ms DONE
+  2026-04-04 04:08:28 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:08:28 App\Jobs\ProcessTaskJob ................... 34.39ms DONE
+  2026-04-04 04:11:55 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:11:55 App\Jobs\ProcessTaskJob .................. 173.24ms DONE
+  2026-04-04 04:13:49 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:13:49 App\Jobs\ProcessTaskJob ................... 36.94ms DONE
+  2026-04-04 04:25:18 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:25:19 App\Jobs\ProcessTaskJob .................. 185.49ms DONE
+  2026-04-04 04:25:22 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:25:22 App\Jobs\ProcessTaskJob ................... 31.27ms DONE
+  2026-04-04 04:29:22 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 04:29:22 App\Jobs\ProcessTaskJob ................... 37.32ms DONE
+  2026-04-04 22:37:56 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 22:37:56 App\Jobs\ProcessTaskJob .................. 187.02ms DONE
+  2026-04-04 22:38:53 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-04 22:38:53 App\Jobs\ProcessTaskJob ................... 33.99ms DONE
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob .................. 148.93ms DONE
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob ................... 21.91ms DONE
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:04:04 App\Jobs\ProcessTaskJob ................... 35.07ms DONE
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ................... 40.93ms DONE
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ................... 28.69ms DONE
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 01:07:40 App\Jobs\ProcessTaskJob ................... 29.73ms DONE
+  2026-04-05 01:58:28 App\Jobs\SendCampaignJob ....................... RUNNING
+  2026-04-05 01:58:28 App\Jobs\SendCampaignJob ................. 154.99ms DONE
+  2026-04-05 01:58:28 App\Jobs\SendWhatsAppMessageJob ................ RUNNING
+  2026-04-05 01:58:28 App\Jobs\SendWhatsAppMessageJob ........... 93.38ms DONE
+  2026-04-05 02:22:48 App\Jobs\ProcessTaskJob ........................ RUNNING
+  2026-04-05 02:22:48 App\Jobs\ProcessTaskJob .................. 159.95ms DONE
+
+In Connection.php line 121:
+                                              
+  read error on connection to 127.0.0.1:6379  
+                                              
+
