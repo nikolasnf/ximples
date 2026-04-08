@@ -81,6 +81,7 @@ Route::prefix('v1')->group(function () {
 
         // Assets
         Route::get('/assets/{chatId}', [AssetController::class, 'index']);
+        Route::get('/assets/show/{id}', [AssetController::class, 'show']);
         Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
 
         // Pages — full CRUD

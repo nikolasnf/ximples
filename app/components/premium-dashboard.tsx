@@ -127,6 +127,7 @@ export default function PremiumDashboard() {
   const [exportingPageId, setExportingPageId] = useState<number | null>(null);
 
   const [highlightedAssetIds, setHighlightedAssetIds] = useState<Set<number>>(new Set());
+  const [viewingAsset, setViewingAsset] = useState<Asset | null>(null);
 
   // Rotate placeholder
   useEffect(() => {
@@ -334,45 +335,105 @@ export default function PremiumDashboard() {
         resourceEvents.emit('chats', { action: 'created', id: chat.id });
       }
 
-      const [ms, as] = await Promise.all([
-        milestonesService.list(chat.id).catch(() => []),
-        assetsService.list(chat.id).catch(() => []),
-      ]);
-      setMilestones(ms);
-      setAssets(as);
+      // Poll for milestones & assets until processing completes or timeout
+      const POLL_INTERVAL = 2000;
+      const POLL_TIMEOUT = 120000;
+      const pollStart = Date.now();
+      let foundNewAssets = false;
 
-      const newAssets = as.filter((a) => !prevAssetIds.has(a.id));
-      if (newAssets.length > 0) {
-        setHighlightedAssetIds((prev) => {
-          const next = new Set(prev);
-          newAssets.forEach((a) => next.add(a.id));
-          return next;
-        });
-        setTimeout(() => {
+      const poll = async (): Promise<void> => {
+        const [ms, as] = await Promise.all([
+          milestonesService.list(chat.id).catch(() => [] as Milestone[]),
+          assetsService.list(chat.id).catch(() => [] as Asset[]),
+        ]);
+        setMilestones(ms);
+        setAssets(as);
+
+        const newAssets = as.filter((a) => !prevAssetIds.has(a.id));
+        if (newAssets.length > 0 && !foundNewAssets) {
+          foundNewAssets = true;
           setHighlightedAssetIds((prev) => {
             const next = new Set(prev);
-            newAssets.forEach((a) => next.delete(a.id));
+            newAssets.forEach((a) => next.add(a.id));
             return next;
           });
-        }, 5000);
+          setTimeout(() => {
+            setHighlightedAssetIds((prev) => {
+              const next = new Set(prev);
+              newAssets.forEach((a) => next.delete(a.id));
+              return next;
+            });
+          }, 5000);
 
-        newAssets.forEach((a) => {
-          resourceEvents.emit(['assets', 'pages', 'milestones'], { action: 'created', id: a.id, data: a });
-        });
+          newAssets.forEach((a) => {
+            resourceEvents.emit(['assets', 'pages', 'milestones'], { action: 'created', id: a.id, data: a });
+          });
 
-        const summary =
-          newAssets.length === 1
-            ? `1 novo ativo criado: ${newAssets[0].name}`
-            : `${newAssets.length} novos ativos criados.`;
-        toast.success(summary, { id: loadingToastId });
+          const summary =
+            newAssets.length === 1
+              ? `1 novo ativo criado: ${newAssets[0].name}`
+              : `${newAssets.length} novos ativos criados.`;
+          toast.success(summary, { id: loadingToastId });
 
-        // Auto-scroll to the assets block so the user sees the new material
-        setTimeout(() => {
-          assetsBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
-      } else {
-        toast.success('Mensagem processada.', { id: loadingToastId });
-      }
+          setTimeout(() => {
+            assetsBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 300);
+        }
+
+        // Keep polling while any milestone is still in progress
+        const stillProcessing = ms.some((m) => m.status === 'pending' || m.status === 'in_progress');
+        if (stillProcessing && Date.now() - pollStart < POLL_TIMEOUT) {
+          await new Promise((r) => setTimeout(r, POLL_INTERVAL));
+          return poll();
+        }
+
+        // Final fetch to ensure we have the latest state
+        if (stillProcessing || !foundNewAssets) {
+          const [finalMs, finalAs] = await Promise.all([
+            milestonesService.list(chat.id).catch(() => [] as Milestone[]),
+            assetsService.list(chat.id).catch(() => [] as Asset[]),
+          ]);
+          setMilestones(finalMs);
+          setAssets(finalAs);
+
+          const finalNew = finalAs.filter((a) => !prevAssetIds.has(a.id));
+          if (finalNew.length > 0 && !foundNewAssets) {
+            foundNewAssets = true;
+            setHighlightedAssetIds((prev) => {
+              const next = new Set(prev);
+              finalNew.forEach((a) => next.add(a.id));
+              return next;
+            });
+            setTimeout(() => {
+              setHighlightedAssetIds((prev) => {
+                const next = new Set(prev);
+                finalNew.forEach((a) => next.delete(a.id));
+                return next;
+              });
+            }, 5000);
+
+            finalNew.forEach((a) => {
+              resourceEvents.emit(['assets', 'pages', 'milestones'], { action: 'created', id: a.id, data: a });
+            });
+
+            const summary =
+              finalNew.length === 1
+                ? `1 novo ativo criado: ${finalNew[0].name}`
+                : `${finalNew.length} novos ativos criados.`;
+            toast.success(summary, { id: loadingToastId });
+
+            setTimeout(() => {
+              assetsBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+          }
+        }
+
+        if (!foundNewAssets) {
+          toast.success('Mensagem processada.', { id: loadingToastId });
+        }
+      };
+
+      await poll();
     } catch (err) {
       if (err instanceof ApiError && err.status === 422) {
         const errorData = err.data as Record<string, unknown>;
@@ -916,8 +977,8 @@ export default function PremiumDashboard() {
                       </div>
                     </div>
 
-                    {/* Generating skeleton — shown while AI is creating */}
-                    {isSending && (
+                    {/* Generating skeleton — shown while AI is creating and no new assets yet */}
+                    {isSending && assets.length === 0 && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.97 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -1010,7 +1071,7 @@ export default function PremiumDashboard() {
 
                               {/* Action Buttons */}
                               <div className="flex items-center gap-1.5">
-                                {asset.page && (
+                                {asset.page ? (
                                   <>
                                     <a
                                       href={`/pages/${asset.page.id}/preview`}
@@ -1056,6 +1117,14 @@ export default function PremiumDashboard() {
                                       Exportar
                                     </button>
                                   </>
+                                ) : ['email', 'whatsapp', 'crm'].includes(asset.type) && (
+                                  <button
+                                    onClick={() => setViewingAsset(asset)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
+                                  >
+                                    <Eye className="w-3 h-3" />
+                                    Visualizar
+                                  </button>
                                 )}
                                 <div className="flex-1" />
                                 <button
@@ -1270,6 +1339,95 @@ export default function PremiumDashboard() {
           </div>
         </div>
       </div>
+      {/* ═══════ Asset Content Modal ═══════ */}
+      <AnimatePresence>
+        {viewingAsset && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setViewingAsset(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-5 border-b border-border/50">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                    {getTypeIcon(viewingAsset.type)}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-sm text-foreground truncate">{viewingAsset.name}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(viewingAsset.created_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => {
+                      handleDeleteAsset(viewingAsset);
+                      setViewingAsset(null);
+                    }}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewingAsset(null)}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="flex-1 overflow-y-auto p-5">
+                {viewingAsset.content ? (
+                  <div className="prose prose-sm max-w-none">
+                    {typeof viewingAsset.content === 'object' && viewingAsset.content !== null ? (
+                      Object.entries(viewingAsset.content).map(([key, value]) => (
+                        <div key={key} className="mb-4">
+                          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                            {key.replace(/_/g, ' ')}
+                          </h4>
+                          <div className="text-sm text-foreground whitespace-pre-wrap bg-secondary/50 rounded-lg p-3">
+                            {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <pre className="text-sm text-foreground whitespace-pre-wrap bg-secondary/50 rounded-lg p-3">
+                        {JSON.stringify(viewingAsset.content, null, 2)}
+                      </pre>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
+                      <FileText className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Conteudo ainda nao disponivel.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -32,6 +32,23 @@ class AssetController extends Controller
         ]);
     }
 
+    public function show(int $id): JsonResponse
+    {
+        $user = auth()->user();
+
+        $asset = Asset::where('id', $id)
+            ->where('tenant_id', $user->tenant_id)
+            ->whereHas('chat', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->with('page:id,asset_id,slug')
+            ->firstOrFail();
+
+        return response()->json([
+            'asset' => $asset,
+        ]);
+    }
+
     public function destroy(int $id): JsonResponse
     {
         $user = auth()->user();
