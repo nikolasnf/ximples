@@ -67,3 +67,21 @@ Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
     at ignore-listed frames
 ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3002". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
 ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3002". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/srv/projects/ximples/app/.next/server/pages/500.html'
+    at ignore-listed frames
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/srv/projects/ximples/app/.next/server/pages/500.html'
+    at ignore-listed frames
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/pages/[id]/preview" does not exist. This is a bug in Next.js.
+    at Object.get (.next/server/chunks/ssr/[root-of-the-server]__0g1k.x9._.js:1:13571)
+⨯ Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/srv/projects/ximples/app/.next/server/pages/500.html'
+    at ignore-listed frames

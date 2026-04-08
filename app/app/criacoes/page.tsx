@@ -36,6 +36,7 @@ import {
   Sparkles,
   Copy,
   MoreHorizontal,
+  Trash2,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -200,15 +201,19 @@ function CreationCard({
   featured,
   onPublish,
   onExport,
+  onDelete,
   isPublishing,
   isExporting,
+  isDeleting,
 }: {
   page: PageRecord;
   featured?: boolean;
   onPublish: () => void;
   onExport: () => void;
+  onDelete: () => void;
   isPublishing: boolean;
   isExporting: boolean;
+  isDeleting: boolean;
 }) {
   const router = useRouter();
   const config = TYPE_CONFIG[page.type] ?? DEFAULT_TYPE_CONFIG;
@@ -385,6 +390,11 @@ function CreationCard({
                 {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
                 Exportar HTML
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onDelete} disabled={isDeleting} variant="destructive">
+                {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+                Excluir
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -488,6 +498,7 @@ function CriacoesContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [publishingId, setPublishingId] = useState<number | null>(null);
   const [exportingId, setExportingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch pages
@@ -580,6 +591,22 @@ function CriacoesContent() {
       toast.error(e instanceof Error ? e.message : 'Erro ao exportar');
     } finally {
       setExportingId(null);
+    }
+  }, []);
+
+  // Delete
+  const handleDelete = useCallback(async (page: PageRecord) => {
+    if (!confirm(`Excluir "${page.title}"? Esta acao nao pode ser desfeita.`)) return;
+    setDeletingId(page.id);
+    try {
+      await pagesApiService.delete(page.id);
+      setPages((prev) => prev.filter((p) => p.id !== page.id));
+      toast.success(`"${page.title}" excluido.`);
+      resourceEvents.emit('pages', { action: 'deleted', id: page.id });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Erro ao excluir');
+    } finally {
+      setDeletingId(null);
     }
   }, []);
 
@@ -794,8 +821,10 @@ function CriacoesContent() {
                   featured={page.id === mostRecentId && activeType === 'all' && activeStatus === 'all' && !searchQuery}
                   onPublish={() => handlePublish(page)}
                   onExport={() => handleExport(page)}
+                  onDelete={() => handleDelete(page)}
                   isPublishing={publishingId === page.id}
                   isExporting={exportingId === page.id}
+                  isDeleting={deletingId === page.id}
                 />
               ))}
             </AnimatePresence>

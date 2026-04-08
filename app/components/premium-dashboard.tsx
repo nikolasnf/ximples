@@ -96,6 +96,7 @@ export default function PremiumDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const assetsBlockRef = useRef<HTMLDivElement>(null);
   const estimateTimeout = useRef<ReturnType<typeof setTimeout>>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -364,6 +365,11 @@ export default function PremiumDashboard() {
             ? `1 novo ativo criado: ${newAssets[0].name}`
             : `${newAssets.length} novos ativos criados.`;
         toast.success(summary, { id: loadingToastId });
+
+        // Auto-scroll to the assets block so the user sees the new material
+        setTimeout(() => {
+          assetsBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
       } else {
         toast.success('Mensagem processada.', { id: loadingToastId });
       }
@@ -886,7 +892,8 @@ export default function PremiumDashboard() {
                 </Card>
 
                 {/* ═══════ SEUS ATIVOS DIGITAIS ═══════ */}
-                {assets.length > 0 && (
+                <div ref={assetsBlockRef}>
+                {(assets.length > 0 || isSending) && (
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -899,17 +906,60 @@ export default function PremiumDashboard() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-foreground text-[15px]">Seus Ativos Digitais</h3>
-                          <p className="text-xs text-muted-foreground">{assets.length} {assets.length === 1 ? 'ativo criado' : 'ativos criados'}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {isSending && assets.length === 0
+                              ? 'Gerando seu material...'
+                              : `${assets.length} ${assets.length === 1 ? 'ativo criado' : 'ativos criados'}`
+                            }
+                          </p>
                         </div>
                       </div>
                     </div>
 
+                    {/* Generating skeleton — shown while AI is creating */}
+                    {isSending && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mb-3"
+                      >
+                        <Card className="overflow-hidden border-primary/30 border-dashed border-2">
+                          <div className="h-28 bg-gradient-to-br from-primary/5 to-blue-500/5 relative flex items-center justify-center">
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-primary">Gerando material</span>
+                                <span className="flex gap-0.5">
+                                  <span className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                                  <span className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
+                                  <span className="w-1 h-1 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-4 space-y-2">
+                            <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
+                            <div className="h-3 w-1/2 bg-muted/70 rounded animate-pulse" />
+                            <div className="flex gap-2 pt-2">
+                              <div className="h-7 w-16 bg-muted rounded-lg animate-pulse" />
+                              <div className="h-7 w-16 bg-muted rounded-lg animate-pulse" />
+                              <div className="h-7 w-16 bg-muted rounded-lg animate-pulse" />
+                            </div>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <AnimatePresence mode="popLayout">
                       {assets.map((asset, idx) => (
                         <motion.div
                           key={asset.id}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
                           transition={{ duration: 0.2, delay: idx * 0.05 }}
                         >
                           <Card
@@ -1025,12 +1075,13 @@ export default function PremiumDashboard() {
                           </Card>
                         </motion.div>
                       ))}
+                      </AnimatePresence>
                     </div>
                   </motion.div>
                 )}
 
                 {/* Empty assets state */}
-                {assets.length === 0 && messages.length > 0 && (
+                {assets.length === 0 && !isSending && messages.length > 0 && (
                   <Card className="ximples-shadow border-dashed border-2 border-border/50">
                     <div className="p-8 text-center">
                       <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
@@ -1042,6 +1093,7 @@ export default function PremiumDashboard() {
                     </div>
                   </Card>
                 )}
+                </div>
               </div>
 
               {/* ═══════ RIGHT SIDEBAR (4 cols) ═══════ */}
