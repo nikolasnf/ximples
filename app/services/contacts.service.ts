@@ -87,6 +87,11 @@ export const contactsService = {
     return res.data;
   },
 
+  async update(id: number, data: { name?: string; phone?: string; email?: string; tags?: string[] }): Promise<Contact> {
+    const res = await api.put<{ success: boolean; data: Contact }>(`/api/v1/contacts/${id}`, data);
+    return res.data;
+  },
+
   async delete(id: number): Promise<void> {
     await api.delete(`/api/v1/contacts/${id}`);
   },
@@ -181,11 +186,15 @@ export const listsService = {
     return res.data;
   },
 
-  async get(id: number): Promise<{ list: ContactList; contacts: Contact[]; meta: PaginatedResponse<Contact>['meta'] }> {
+  async get(id: number, params: { per_page?: number; page?: number } = {}): Promise<{ list: ContactList; contacts: Contact[]; meta: PaginatedResponse<Contact>['meta'] }> {
+    const qs = new URLSearchParams();
+    if (params.per_page) qs.set('per_page', String(params.per_page));
+    if (params.page) qs.set('page', String(params.page));
+    const query = qs.toString() ? `?${qs.toString()}` : '';
     const res = await api.get<{
       success: boolean;
       data: { list: ContactList; contacts: Contact[]; meta: PaginatedResponse<Contact>['meta'] };
-    }>(`/api/v1/lists/${id}`);
+    }>(`/api/v1/lists/${id}${query}`);
     return res.data;
   },
 

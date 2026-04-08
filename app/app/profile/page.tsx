@@ -13,7 +13,7 @@ import { ArrowLeft, User, Lock, Trash2, Loader2, CheckCircle, AlertTriangle } fr
 
 function ProfileContent() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
 
   // Profile
   const [name, setName] = useState(user?.name || '');
@@ -49,7 +49,8 @@ function ProfileContent() {
     setProfileError('');
     setSavingProfile(true);
     try {
-      await profileService.update({ name, email });
+      const updatedUser = await profileService.update({ name, email });
+      updateUser(updatedUser);
       setProfileMsg('Perfil atualizado com sucesso!');
     } catch (err: unknown) {
       setProfileError(err instanceof Error ? err.message : 'Erro ao atualizar perfil.');
@@ -112,7 +113,7 @@ function ProfileContent() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
+            <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
             <p className="text-sm text-muted-foreground">Gerencie sua conta</p>
           </div>
         </div>

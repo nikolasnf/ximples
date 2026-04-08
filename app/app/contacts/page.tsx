@@ -21,8 +21,9 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { EditContactDialog } from '@/components/edit-contact-dialog';
 import {
-  ArrowLeft, Upload, Users, Loader2, Search, Trash2,
+  ArrowLeft, Upload, Users, Loader2, Search, Trash2, Pencil,
   CheckCircle, AlertCircle, Sparkles, Eye, ArrowRight,
   RotateCcw, Save, ChevronLeft, ChevronRight,
 } from 'lucide-react';
@@ -52,6 +53,8 @@ function ContactsContent() {
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [mappingOverrides, setMappingOverrides] = useState<Record<string, string>>({});
   const [templateName, setTemplateName] = useState('');
+
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
   const [page, setPage] = useState(1);
   const [paginationMeta, setPaginationMeta] = useState<PaginatedResponse<Contact>['meta'] | null>(null);
@@ -497,6 +500,9 @@ function ContactsContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         {c.source_file && <Badge variant="outline">{c.source_file}</Badge>}
+                        <Button variant="ghost" size="icon" onClick={() => setEditingContact(c)}>
+                          <Pencil className="w-4 h-4 text-muted-foreground" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)}>
                           <Trash2 className="w-4 h-4 text-red-500" />
                         </Button>
@@ -539,6 +545,15 @@ function ContactsContent() {
             </>
           )}
         </Card>
+
+        <EditContactDialog
+          contact={editingContact}
+          open={!!editingContact}
+          onOpenChange={(open) => { if (!open) setEditingContact(null); }}
+          onUpdated={(updated) => {
+            setContacts((prev) => prev.map((c) => c.id === updated.id ? updated : c));
+          }}
+        />
       </div>
     </div>
   );

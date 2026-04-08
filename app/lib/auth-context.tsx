@@ -11,6 +11,7 @@ interface AuthContextType {
   isLoading: boolean;
   tokenBalance: number;
   refreshBalance: () => Promise<void>;
+  updateUser: (user: User) => void;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
   logout: () => void;
@@ -76,6 +77,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTokenBalance(response.balance);
   };
 
+  const updateUser = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('ximples_user', JSON.stringify(updatedUser));
+  }, []);
+
   const logout = () => {
     const token = localStorage.getItem('ximples_token');
     setUser(null);
@@ -91,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, isAuthenticated: !!user, isLoading,
-      tokenBalance, refreshBalance,
+      tokenBalance, refreshBalance, updateUser,
       login, signup, logout,
     }}>
       {children}

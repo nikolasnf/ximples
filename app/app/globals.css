@@ -139,6 +139,10 @@
   box-shadow: 0 10px 30px rgba(24, 58, 107, 0.08);
 }
 
+.ximples-shadow-lg {
+  box-shadow: 0 20px 60px rgba(24, 58, 107, 0.12), 0 4px 12px rgba(24, 58, 107, 0.04);
+}
+
 .ximples-button-primary {
   @apply bg-primary hover:bg-[#122C52] text-white font-medium transition-all duration-200 rounded-[16px] px-6 py-3;
 }
@@ -152,9 +156,97 @@
 }
 
 .ximples-message-user {
-  @apply bg-primary text-white rounded-lg rounded-br-none;
+  @apply bg-primary text-white rounded-2xl rounded-br-sm;
 }
 
 .ximples-message-assistant {
-  @apply bg-secondary text-foreground border border-border rounded-lg rounded-bl-none;
+  @apply bg-secondary text-foreground border border-border rounded-2xl rounded-bl-sm;
+}
+
+/* Glassmorphism card */
+.ximples-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Sidebar nav item active glow */
+.sidebar-active-glow {
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.9), 0 0 20px rgba(96, 165, 250, 0.15);
+}
+
+/* Gradient text utility */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #183A6B 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Energy bar glow */
+.energy-bar-glow {
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4), 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Chat input focus ring */
+.chat-input-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.chat-input-premium:focus-within {
+  box-shadow: 0 0 0 3px rgba(24, 58, 107, 0.1), 0 8px 32px rgba(24, 58, 107, 0.08);
+  border-color: var(--ximples-primary);
+}
+
+/* Quick action hover effect */
+.quick-action-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.quick-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(24, 58, 107, 0.12);
+}
+
+/* Asset card hover */
+.asset-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.asset-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(24, 58, 107, 0.1);
+}
+
+/* Pulse animation for AI indicator */
+@keyframes ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.ai-pulse {
+  animation: ai-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Scrollbar styling */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(24, 58, 107, 0.15);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(24, 58, 107, 0.25);
 }
