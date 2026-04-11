@@ -12,6 +12,11 @@ export const assetsService = {
     return response.asset;
   },
 
+  async update(assetId: number, data: { name?: string; content?: Record<string, unknown> }): Promise<Asset> {
+    const response = await api.put<{ asset: Asset }>(`/api/v1/assets/${assetId}`, data);
+    return response.asset;
+  },
+
   async delete(assetId: number): Promise<void> {
     await api.delete(`/api/v1/assets/${assetId}`);
   },

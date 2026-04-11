@@ -49,6 +49,30 @@ class AssetController extends Controller
         ]);
     }
 
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $user = auth()->user();
+
+        $asset = Asset::where('id', $id)
+            ->where('tenant_id', $user->tenant_id)
+            ->whereHas('chat', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'content' => 'sometimes|array',
+        ]);
+
+        $asset->update($validated);
+        $asset->load('page:id,asset_id,slug');
+
+        return response()->json([
+            'asset' => $asset,
+        ]);
+    }
+
     public function destroy(int $id): JsonResponse
     {
         $user = auth()->user();

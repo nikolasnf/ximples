@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BrevoWebhookController;
 use App\Http\Controllers\Api\V1\CampaignController;
+use App\Http\Controllers\Api\V1\EmailSequenceController;
 use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ContactListController;
@@ -45,8 +47,9 @@ Route::prefix('v1')->group(function () {
             ->where('idOrSlug', '[A-Za-z0-9_-]+');
     });
 
-    // Stripe webhook (public, no auth)
+    // Webhooks (public, no auth)
     Route::post('/webhooks/stripe', [PaymentController::class, 'webhook']);
+    Route::post('/webhooks/brevo', [BrevoWebhookController::class, 'handle']);
 
     // Tracking (public, throttled)
     Route::middleware('throttle:300,1')->group(function () {
@@ -82,6 +85,7 @@ Route::prefix('v1')->group(function () {
         // Assets
         Route::get('/assets/{chatId}', [AssetController::class, 'index']);
         Route::get('/assets/show/{id}', [AssetController::class, 'show']);
+        Route::put('/assets/{id}', [AssetController::class, 'update']);
         Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
 
         // Pages — full CRUD
@@ -136,6 +140,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/copy-suggestions/{id}', [CopySuggestionController::class, 'show']);
         Route::post('/copy-suggestions/{id}/apply', [CopySuggestionController::class, 'apply']);
         Route::post('/copy-suggestions/{id}/dismiss', [CopySuggestionController::class, 'dismiss']);
+
+        // Email sequences
+        Route::post('/email-sequences/{assetId}/dispatch', [EmailSequenceController::class, 'dispatch']);
+        Route::get('/email-sequences/{assetId}/sends', [EmailSequenceController::class, 'sends']);
+        Route::get('/email-sequences/{assetId}/stats', [EmailSequenceController::class, 'stats']);
 
         // Campaigns
         Route::get('/campaigns', [CampaignController::class, 'index']);
